@@ -1,4 +1,4 @@
-import { LinkButton } from "../components/ui/button";
+import { LinkButton } from "../components/ui/Button";
 
 const TentangKami = () => {
   return (

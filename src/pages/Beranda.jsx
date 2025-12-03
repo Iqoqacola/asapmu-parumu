@@ -1,5 +1,5 @@
-import { NavLinkButton } from "../components/ui/button";
-import { LinkButton } from "../components/ui/button";
+import { NavLinkButton } from "../components/ui/Button";
+import { LinkButton } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 
 const Beranda = () => {

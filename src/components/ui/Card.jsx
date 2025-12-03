@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LinkButton } from "./button";
+import { LinkButton } from "./Button";
 
 export const Card = ({ title, context }) => {
   return (

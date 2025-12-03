@@ -5,7 +5,7 @@ import PenyuluhanIcon from "/public/assets/penyuluhanIcon.svg?react";
 import TentangKamiIcon from "/public/assets/tentangKamiIcon.svg?react";
 import LoginIcon from "/public/assets/loginIcon.svg?react";
 import UserIcon from "/public/assets/userIcon.svg?react";
-import { UserButton } from "../ui/button";
+import { UserButton } from "../ui/Button";
 
 const Navbar = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
