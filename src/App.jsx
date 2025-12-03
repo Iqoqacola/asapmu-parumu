@@ -1,4 +1,5 @@
 import { Route, Routes, useLocation, useNavigate } from "react-router";
+import { api } from "./services/api";
 import {
   ProtectedRouteIsLogin,
   ProtectedRoutePenyuluhan,
@@ -32,18 +33,13 @@ function App() {
       const token = localStorage.getItem("authToken");
       if (token) {
         try {
-          const res = await fetch("http://localhost:8080/api/profile/me", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          if (res.ok) {
-            const userData = await res.json();
-            setUser(userData);
-          } else {
-            localStorage.removeItem("authToken");
-          }
+          // [UBAH] Pakai api.get untuk cek profile
+          const userData = await api.get("/profile/me");
+          setUser(userData);
         } catch (error) {
-          console.error(error);
+          console.error("Gagal verifikasi user:", error);
+          // Token tidak valid/expired, hapus
+          localStorage.removeItem("authToken");
         }
       }
     };

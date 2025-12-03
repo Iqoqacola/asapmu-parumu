@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FinishPopUp } from "../components/ui/Card";
+import { api } from "../services/api";
 
 // Komponen untuk menampilkan game dari link (menggunakan iframe)
 const GameComponent = ({ gameUrl }) => {
@@ -28,6 +29,8 @@ const Penyuluhan = ({ user }) => {
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
+
+      // [BARU] Cek token simpel
       const token = localStorage.getItem("authToken");
       if (!token) {
         setError("Otentikasi gagal. Silakan login kembali.");
@@ -36,29 +39,17 @@ const Penyuluhan = ({ user }) => {
       }
 
       try {
-        const [stepsResponse, progressResponse] = await Promise.all([
-          fetch("http://localhost:8080/api/content/steps", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch("http://localhost:8080/api/progress", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+        // [UBAH] Fetch data pakai api.get dengan Promise.all
+        const [stepsData, progressData] = await Promise.all([
+          api.get("/content/steps"),
+          api.get("/progress"),
         ]);
-
-        if (!stepsResponse.ok || !progressResponse.ok) {
-          throw new Error(
-            "Gagal memuat data dari server. Pastikan backend berjalan dan tabel sudah diperbarui."
-          );
-        }
-
-        const stepsData = await stepsResponse.json();
-        const progressData = await progressResponse.json();
 
         setSteps(stepsData);
         setCurrentStep(progressData.currentStep);
         setCompletedSteps(progressData.completedSteps);
       } catch (err) {
-        setError(err.message);
+        setError("Gagal memuat data.");
         console.error("Error fetching data:", err);
       } finally {
         setIsLoading(false);
@@ -69,16 +60,9 @@ const Penyuluhan = ({ user }) => {
   }, []);
 
   const saveProgressToBackend = async (progressUpdate) => {
-    const token = localStorage.getItem("authToken");
     try {
-      await fetch("http://localhost:8080/api/progress", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(progressUpdate),
-      });
+      // [UBAH] Simpan progress pakai api.post
+      await api.post("/progress", progressUpdate);
     } catch (error) {
       console.error("Gagal menyimpan progress ke server:", error);
     }

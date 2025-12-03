@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { api } from "../services/api";
 
 const Masuk = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
@@ -24,53 +25,36 @@ const Masuk = ({ onLogin }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    setAlert({
-      type: "",
-      message: "",
-    });
+    setAlert({ type: "", message: "" }); // Reset alert
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      // [UBAH] Pakai api.post, kode jadi lebih pendek
+      const { ok, data } = await api.post("/auth/login", formData);
 
-      const data = await res.json();
-
-      if (res.ok) {
-        const token = await data.token;
+      if (ok) {
+        const token = data.token;
         localStorage.setItem("authToken", token);
 
-        const profileRes = await fetch("http://localhost:8080/api/profile/me", {
-          headers: { Authorization: `Bearer ${token}` },
+        // [UBAH] Ambil profil user juga pakai api.get
+        const userData = await api.get("/profile/me");
+
+        setAlert({
+          type: "success",
+          message: "Mengarahkan ke halaman penyuluhan...",
         });
-
-        if (profileRes.ok) {
-          const userData = await profileRes.json();
-
-          setAlert({
-            type: "success",
-            message: "Mengarahkan ke halaman penyuluhan...",
-          });
-          onLogin(userData);
-        } else {
-          throw new Error("Gagal mengambil profil setelah login.");
-        }
+        onLogin(userData);
       } else {
         setAlert({
           type: "error",
           message: data.error || "Terjadi kesalahan!",
         });
-
-        return;
       }
     } catch (err) {
       setAlert({
         type: "error",
-        message: err,
+        message: "Gagal terhubung ke server.", // Pesan error lebih user friendly
       });
+      console.error(err);
     } finally {
       setLoading(false);
     }
