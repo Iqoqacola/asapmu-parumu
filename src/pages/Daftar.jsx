@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { api } from "../services/api"; // [1] Jangan lupa import ini
 
 const Daftar = () => {
   const [loading, setLoading] = useState(false);
@@ -25,27 +26,19 @@ const Daftar = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setAlert({
-      type: "",
-      message: "",
-    });
+    setAlert({ type: "", message: "" });
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: formData.username,
-          namaLengkap: formData.namaLengkap,
-          password: formData.password,
-          konfirmasiPassword: formData.konfirmasiPassword,
-        }),
+      // [2] Ganti fetch manual dengan api.post
+      const { ok, data } = await api.post("/auth/register", {
+        username: formData.username,
+        namaLengkap: formData.namaLengkap,
+        password: formData.password,
+        konfirmasiPassword: formData.konfirmasiPassword,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
+      if (!ok) {
         setAlert({
           type: "error",
           message: data.error || "Terjadi kesalahan!",
@@ -55,13 +48,22 @@ const Daftar = () => {
 
       setAlert({
         type: "success",
-        message: data.success || "Registrasi berhasil!",
+        message: data.success || "Registrasi berhasil! Silakan login.",
+      });
+
+      // Opsional: Reset form jika berhasil
+      setFormData({
+        username: "",
+        namaLengkap: "",
+        password: "",
+        konfirmasiPassword: "",
       });
     } catch (err) {
       setAlert({
         type: "error",
-        message: err,
+        message: "Gagal terhubung ke server.",
       });
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -74,6 +76,8 @@ const Daftar = () => {
           Daftar Akun
         </h2>
         <form onSubmit={handleRegister} className="space-y-4">
+          {/* BAGIAN INPUT (Tidak perlu diubah, biarkan seperti semula) */}
+
           <div>
             <label className="block font-medium mb-1">Username</label>
             <input
@@ -124,8 +128,8 @@ const Daftar = () => {
             />
           </div>
 
-          {/* Bagian untuk menampilkan notifikasi */}
-          {alert.message ? (
+          {/* Bagian Alert */}
+          {alert.message && (
             <div
               className={`text-center text-sm p-2 rounded-md ${
                 alert.type === "success"
@@ -135,8 +139,6 @@ const Daftar = () => {
             >
               {alert.message}
             </div>
-          ) : (
-            ""
           )}
 
           <button
