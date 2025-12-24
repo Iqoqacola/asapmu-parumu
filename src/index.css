@@ -1,4 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=BBH+Sans+Hegarty&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('/fonts/HelveticaNeue-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('/fonts/HelveticaNeue-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
 @import "tailwindcss";
 @plugin "daisyui" {
   themes: light --default;
