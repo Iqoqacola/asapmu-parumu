@@ -1,17 +1,20 @@
-import { Route, Routes, useLocation, useNavigate } from "react-router";
-import { api } from "./services/api";
-import {
-  ProtectedRouteIsLogin,
-  ProtectedRoutePenyuluhan,
-} from "./components/utils/ProtectedRoute";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+
+// import { api } from "./services/api";
+// import {
+//   ProtectedRouteIsLogin,
+//   ProtectedRoutePenyuluhan,
+// } from "./components/utils/ProtectedRoute";
+// import Masuk from "./pages/Masuk";
+// import Daftar from "./pages/Daftar";
+// import Penyuluhan from "./pages/Penyuluhan";
 
 // Pages
 import Beranda from "./pages/Beranda";
-import Penyuluhan from "./pages/Penyuluhan";
 import TentangKami from "./pages/TentangKami";
 import ErrorPage from "./pages/Error";
-import Masuk from "./pages/Masuk";
-import Daftar from "./pages/Daftar";
+
+import PenyuluhanStatis from "./pages/PenyuluhanStatis";
 
 // Navbar Footer
 import Navbar from "./components/layout/Navbar";
@@ -19,32 +22,28 @@ import Footer from "./components/layout/Footer";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  
+  const [user, setUser] = useState({ namaLengkap: "Pengguna", username: "pengguna" });
+  
   const navigate = useNavigate();
-
   const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [pathname]);
 
+  /*
   useEffect(() => {
-    const checkUserLoggedIn = async () => {
-      const token = localStorage.getItem("authToken");
-      if (token) {
-        try {
-          // [UBAH] Pakai api.get untuk cek profile
-          const userData = await api.get("/profile/me");
-          setUser(userData);
-        } catch (error) {
-          console.error("Gagal verifikasi user:", error);
-          // Token tidak valid/expired, hapus
-          localStorage.removeItem("authToken");
-        }
+    const fetchUser = async () => {
+      try {
+        const response = await api.get("/profile/me");
+        setUser(response.data);
+      } catch (error) {
+        console.error("Gagal mengambil data user", error);
       }
     };
-
-    checkUserLoggedIn();
+    fetchUser();
   }, []);
 
   const handleLoginSuccess = (userData) => {
@@ -56,13 +55,17 @@ function App() {
     navigate("/masuk");
     setUser(null);
   };
+  */
 
   return (
     <>
-      <Navbar user={user} onLogout={handleLogout} />
+      {/* Navbar diberikan fungsi logout kosong karena statis */}
+      <Navbar user={user} onLogout={() => {}} />
       <div className="p-10"></div>
       <Routes>
         <Route path="/" element={<Beranda />} />
+
+        {/*
         <Route
           path="/masuk"
           element={
@@ -87,6 +90,10 @@ function App() {
             </ProtectedRoutePenyuluhan>
           }
         />
+        */}
+
+        <Route path="/penyuluhan" element={<PenyuluhanStatis user={user} />} />
+
         <Route path="/tentangkami" element={<TentangKami />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>

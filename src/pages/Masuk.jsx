@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { api } from "../services/api";
+import { Link, useNavigate } from "react-router-dom";
+// import { api } from "../services/api";
 
 const Masuk = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -25,39 +26,37 @@ const Masuk = ({ onLogin }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setAlert({ type: "", message: "" }); // Reset alert
+    setAlert({ type: "", message: "" });
 
+    /*
     try {
-      // [UBAH] Pakai api.post, kode jadi lebih pendek
-      const { ok, data } = await api.post("/auth/login", formData);
-
-      if (ok) {
-        const token = data.token;
-        localStorage.setItem("authToken", token);
-
-        // [UBAH] Ambil profil user juga pakai api.get
-        const userData = await api.get("/profile/me");
-
-        setAlert({
-          type: "success",
-          message: "Mengarahkan ke halaman penyuluhan...",
-        });
-        onLogin(userData);
-      } else {
-        setAlert({
-          type: "error",
-          message: data.error || "Terjadi kesalahan!",
-        });
-      }
-    } catch (err) {
-      setAlert({
-        type: "error",
-        message: "Gagal terhubung ke server.", // Pesan error lebih user friendly
-      });
-      console.error(err);
+      const response = await api.post("/auth/login", formData);
+      localStorage.setItem("authToken", response.data.token);
+      onLogin(response.data.user);
+      setAlert({ type: "success", message: "Login berhasil!" });
+      navigate("/penyuluhan");
+    } catch (error) {
+      setAlert({ type: "error", message: "Username atau password salah!" });
     } finally {
       setLoading(false);
     }
+    */
+
+    setTimeout(() => {
+      localStorage.setItem("authToken", "static-dummy-token");
+      localStorage.setItem("staticUsername", formData.username);
+
+      const userData = { namaLengkap: formData.username, username: formData.username };
+
+      setAlert({
+        type: "success",
+        message: "Mengarahkan ke halaman penyuluhan...",
+      });
+      
+      onLogin(userData);
+      navigate("/penyuluhan");
+      setLoading(false);
+    }, 1000);
   };
 
   return (
@@ -90,7 +89,7 @@ const Masuk = ({ onLogin }) => {
             />
           </div>
 
-          {alert.message ? (
+          {alert.message && (
             <div
               className={`text-center text-sm p-2 rounded-md ${
                 alert.type === "success"
@@ -100,8 +99,6 @@ const Masuk = ({ onLogin }) => {
             >
               {alert.message}
             </div>
-          ) : (
-            ""
           )}
 
           <button
